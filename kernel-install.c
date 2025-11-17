@@ -100,7 +100,7 @@ Distro detect_distro() {
         } else if (strstr(line, "ID=ubuntu") || strstr(line, "ID=elementary") || strstr(line, "ID=pop")) {
             fclose(fp);
             return DISTRO_MINT; // Tratar Ubuntu como Mint para certificados
-        } else if (strstr(line, "ID=debian") || strstr(line, "ID=goldendoglinux")) {
+        } else if (strstr(line, "ID=debian") || strstr(line, "ID=goldendoglinux") || strstr(line, "ID=soplos")) {
             fclose(fp);
             return DISTRO_DEBIAN;
         } else if (strstr(line, "ID=arch")) {
