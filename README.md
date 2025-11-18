@@ -46,8 +46,13 @@ Thanks!
 
 -- Alexia.
 
-## To Do 
+## DONATE / DONAR AL PROYECTO
 
- * Add more language support (French, Italian, German, Dutch, Swedish, Finnish and more)
- * Add support for rhel-based and arch-based distros
+Si deseas apoyar estos desarrollos libres e independientes y querés regalarme un cafecito podés hacer una donación privada con el siguiente QR. 
+
+![QR Binance](https://github.com/alexiarstein/kernelinstall.github.io/blob/main/IMG_3213.png)
+
+Como las donaciones son anónimas (no se quien dona que cosa ni veo tu información personal) podés enviarme un mail a hola@goldendoglinux.org con tu nombre o apodo una vez que donaste
+para poner tu nombre en la lista de donors. (Totalmente opcional)
+
 
