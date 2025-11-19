@@ -28,6 +28,10 @@ When compiling from source, be sure to have the required packages installed (mak
  * ElementaryOS
  * PopOS!
 
+## Y en que cambia las cosas?
+
+leé el changelog [https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.8](https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.8)
+
 ## Language Support
 
  * English
