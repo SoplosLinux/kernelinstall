@@ -85,7 +85,7 @@ class KernelInstallerGUI(Gtk.Window):
         info_frame.add(info_box)
         main_box.pack_start(info_frame, False, False, 0)
         
-        # Terminal VTE para mostrar el progreso
+        # VTE Terminal to show progress
         terminal_frame = Gtk.Frame(label=_("Installation Progress"))
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
@@ -99,7 +99,7 @@ class KernelInstallerGUI(Gtk.Window):
         terminal_frame.add(scroll)
         main_box.pack_start(terminal_frame, True, True, 0)
         
-        # Barra de progreso
+        # Progress bar
         self.progress_bar = Gtk.ProgressBar()
         self.progress_bar.set_show_text(True)
         self.progress_bar.set_text(_("Ready"))
@@ -218,7 +218,9 @@ class KernelInstallerGUI(Gtk.Window):
         self.start_button.set_sensitive(False)
         self.cancel_button.set_sensitive(True)
         self.progress_bar.set_text(_("Installing..."))
-        self.progress_bar.pulse()
+        self.progress_bar.set_fraction(0.0)
+        self.pulse_animating = True
+        self.pulse_timeout_id = GLib.timeout_add(100, self.pulse_progress)
         
         # Start progress bar animation
         GLib.timeout_add(100, self.pulse_progress)
@@ -235,13 +237,45 @@ class KernelInstallerGUI(Gtk.Window):
                         self.cancel_button.set_sensitive(False)
                     else:
                         self.process_pid = pid
-                
+                        # Save the process group to kill the whole group
+                        try:
+                            import os
+                            self.process_pgid = os.getpgid(pid)
+                        except Exception:
+                            self.process_pgid = None
+
+                def on_terminal_output(terminal, data, length, user_data):
+                    text = data.decode('utf-8', errors='replace')
+                    self.write_to_terminal(text)
+                    for line in text.splitlines():
+                        if line.startswith('PROGRESS:'):
+                            try:
+                                percent = int(line.split(':')[1])
+                                # Stop pulse animation on first real progress
+                                if getattr(self, 'pulse_animating', False):
+                                    self.pulse_animating = False
+                                    if hasattr(self, 'pulse_timeout_id'):
+                                        GLib.source_remove(self.pulse_timeout_id)
+                                self.progress_bar.set_fraction(percent/100.0)
+                                self.progress_bar.set_text(_("Progress: {}%").format(percent))
+                                if percent >= 100:
+                                    self.installation_running = False
+                                    self.start_button.set_sensitive(True)
+                                    self.cancel_button.set_sensitive(False)
+                                    self.progress_bar.set_text(_("Completed"))
+                            except Exception:
+                                pass
+
+                self.terminal.connect('contents-changed', self.on_terminal_contents_changed)
+                self.terminal.connect('commit', on_terminal_output)
+
+                # Use setsid to launch the process in a new group
                 self.terminal.spawn_async(
                     Vte.PtyFlags.DEFAULT,
                     os.getcwd(),
                     [installer_path],
                     None,
-                    GLib.SpawnFlags.DEFAULT,
+                    GLib.SpawnFlags.DEFAULT | GLib.SpawnFlags.SETSID,
                     None,
                     None,
                     -1,
@@ -259,6 +293,9 @@ class KernelInstallerGUI(Gtk.Window):
             self.installation_running = False
             self.start_button.set_sensitive(True)
             self.cancel_button.set_sensitive(False)
+        def on_terminal_contents_changed(self, terminal):
+            # Optionally scroll to bottom or handle other UI updates
+            pass
     
     def find_installer(self):
         """Find the installer executable"""
@@ -279,7 +316,7 @@ class KernelInstallerGUI(Gtk.Window):
     
     def pulse_progress(self):
         """Animate the progress bar"""
-        if self.installation_running:
+        if getattr(self, 'pulse_animating', False) and self.installation_running:
             self.progress_bar.pulse()
             return True
         return False
@@ -299,19 +336,22 @@ class KernelInstallerGUI(Gtk.Window):
         dialog.destroy()
         
         if response == Gtk.ResponseType.YES:
-            # Kill the process if it's running
-            if self.process_pid:
+            # Kill the process group if possible
+            import signal
+            killed = False
+            if hasattr(self, 'process_pgid') and self.process_pgid:
                 try:
-                    import signal
-                    os.kill(self.process_pid, signal.SIGTERM)
-                    self.write_to_terminal(_("\n*** Installation cancelled by user ***\n"))
+                    os.killpg(self.process_pgid, signal.SIGTERM)
+                    self.write_to_terminal(_("\n*** Installation cancelled by user (group) ***\n"))
+                    killed = True
                 except ProcessLookupError:
-                    pass  # Process already terminated
+                    pass
                 except Exception as e:
-                    self.write_to_terminal(_("Error terminating process: {}\n").format(str(e)))
+                    self.write_to_terminal(_("Error terminating process group: {}\n").format(str(e)))
             
             self.installation_running = False
             self.process_pid = None
+            self.process_pgid = None
             self.start_button.set_sensitive(True)
             self.cancel_button.set_sensitive(False)
             self.progress_bar.set_text(_("Cancelled"))

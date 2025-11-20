@@ -99,18 +99,31 @@ Read the changelog [https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.17.
 This is a powerful tool that fetches the latest stable kernel release from [kernel.org](https://kernel.org), configures it, compiles and installs it.
 
 **New features:**
- * 🎉 **GUI Interface** with Python/GTK3 - Modern graphical interface with real-time progress
- * 🎉 **Multi-Distribution Support** - Works on Debian, Ubuntu, Mint, Arch, Manjaro, Fedora, RHEL and more
- * 🎉 **Automatic Package Manager Detection** - Automatically uses apt, pacman, dnf, zypper or emerge
+ * 🎉 **GUI Interface** with Python/GTK3 - Modern graphical interface with real-time progress bar (shows real progress, not just animation)
+ * 🎉 **Multi-Distribution Support** - Works on Debian, Ubuntu, Mint, Arch, Manjaro, Fedora, RHEL, Soplos and more
+ * 🎉 **Automatic Package Manager Detection** - Uses apt, pacman, dnf, zypper or emerge as needed
  * 🎉 **Dracut Support** - Full support for dracut initramfs systems (Soplos, Arch, Fedora)
  * 🎉 **Automatic initramfs detection** - Detects and uses dracut, initramfs-tools, or mkinitcpio
  * 🎉 **Interactive Compilation** - Choose between CLI and GUI mode after compilation
- * 🎉 **Process Control** - Cancel button in GUI properly terminates installation
- * 🎉 **Multi-language** - Full internationalization support (English and Spanish)
+ * 🎉 **Process Control** - Cancel button in GUI safely terminates the entire installation process group (no orphaned processes)
+ * 🎉 **Dependency Robustness** - On Soplos, dependencies are always reinstalled to avoid missing headers
+ * 🎉 **Internationalization** - Full i18n support (English and Spanish)
+ * 🎉 **Security** - All process management and signals in the GUI are handled safely (no direct os.kill, only process groups)
+ * 🎉 **Modular Architecture** - Each distribution has its own header and logic, easy to extend
 
 ## Testing
 
-This installer has been tested on multiple distributions. If you test it on Ubuntu, Mint, Elementary or other distributions, please create an issue with your results to help improve compatibility.
+
+### Technical improvements (2025):
+- Modular C code: each distro in its own header (see `distro/`)
+- GUI progress bar now shows real progress (not just animation)
+- GUI cancel button kills the full process group (safe, no zombies)
+- All code and comments in English, only translations in .po/.mo
+- Compile script for Soplos/apt now uses `--reinstall` to avoid missing headers
+- Internationalization: 100% English/Spanish, easy to add more
+- Security: no unsafe signal handling, no orphaned processes
+
+This installer has been tested on multiple distributions. If you test it on Ubuntu, Mint, Elementary, Soplos or other distributions, please create an issue with your results to help improve compatibility.
 
 Thanks!
 
