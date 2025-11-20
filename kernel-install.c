@@ -17,7 +17,7 @@
 #include "distro/debian.h"
 #include "distro/linuxmint.h"
 #include "distro/soplos.h"
-#include "distro/arch.h"
+#warning "Arch Linux support removed: rolling release always up-to-date."
 #include "distro/fedora.h"
 
 #define APP_VERSION "1.1.0"
@@ -130,8 +130,6 @@ DistroOperations* get_distro_operations(Distro distro) {
             return &DEBIAN_OPS;
         case DISTRO_MINT:
             return &MINT_OPS;
-        case DISTRO_ARCH:
-            return &ARCH_OPS;
         case DISTRO_FEDORA:
             return &FEDORA_OPS;
         default:
