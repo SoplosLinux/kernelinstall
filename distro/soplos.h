@@ -14,9 +14,9 @@ void soplos_install_dependencies() {
 void soplos_build_and_install(const char* home, const char* version, const char* tag) {
     char cmd[2048];
     
-    // Build kernel using bindeb-pkg
+    // Build kernel using bindeb-pkg (without fakeroot due to GCC 15 compatibility issues)
     snprintf(cmd, sizeof(cmd),
-             "cd %s/kernel_build/linux-%s && fakeroot make -j$(nproc) bindeb-pkg",
+             "cd %s/kernel_build/linux-%s && make -j$(nproc) bindeb-pkg KBUILD_BUILD_USER=soplos KBUILD_BUILD_HOST=soplos-linux",
              home, version);
     run(cmd);
     
