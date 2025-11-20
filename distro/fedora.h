@@ -5,7 +5,7 @@
 
 void fedora_install_dependencies() {
     run("sudo dnf update -y && sudo dnf install -y --skip-broken --allowerasing "
-        "gcc make ncurses-devel bc openssl-devel elfutils-libelf-devel elfutils-devel libdw-devel "
+        "gcc make ncurses-devel bc openssl-devel elfutils-libelf-devel elfutils-devel "
         "bison flex perl wget tar xz git gettext dwarves rpm-build "
         "dracut grub2-tools kernel-devel");
 }
