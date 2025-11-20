@@ -17,7 +17,7 @@
 #include "distro/debian.h"
 #include "distro/linuxmint.h"
 #include "distro/soplos.h"
-#include "distro/arch.h"
+#warning "Arch Linux support removed: rolling release always up-to-date."
 #include "distro/fedora.h"
 
 #define APP_VERSION "1.1.0"
@@ -130,8 +130,6 @@ DistroOperations* get_distro_operations(Distro distro) {
             return &DEBIAN_OPS;
         case DISTRO_MINT:
             return &MINT_OPS;
-        case DISTRO_ARCH:
-            return &ARCH_OPS;
         case DISTRO_FEDORA:
             return &FEDORA_OPS;
         default:
@@ -219,18 +217,19 @@ int main(void) {
     // Detect distribution and get operations
     Distro distro = detect_distro();
     DistroOperations* ops = get_distro_operations(distro);
-    
+
     if (!ops) {
         fprintf(stderr, _("Unsupported Linux distribution. Currently only Debian-based systems are supported.\n"));
         exit(EXIT_FAILURE);
     }
-    
+
     printf(_("Detected distribution: %s\n"), ops->name);
-    
+    printf("PROGRESS:1\n"); fflush(stdout);
+
     if (check_and_install_whiptail(distro) != 0) {
         fprintf(stderr, _("Whiptail installation failed. Continuing with text mode...\n"));
     }
-    
+
     if (show_welcome_dialog() != 0) {
         printf(_("Installation cancelled by user.\n"));
         return 0;
@@ -239,6 +238,7 @@ int main(void) {
     char build_dir[512];
     snprintf(build_dir, sizeof(build_dir), "%s/kernel_build", home);
     printf(_("Creating build directory: %s\n"), build_dir);
+    printf("PROGRESS:5\n"); fflush(stdout);
 
     if (mkdir(build_dir, 0755) != 0) {
         if (errno == EEXIST) {
@@ -257,6 +257,7 @@ int main(void) {
 
     // Install distribution-specific dependencies
     printf(_("Installing required packages for %s...\n"), ops->name);
+    printf("PROGRESS:10\n"); fflush(stdout);
     ops->install_dependencies();
 
     // For Mint/Ubuntu: generate GoldenDogLinux certificate
@@ -264,13 +265,13 @@ int main(void) {
         mint_generate_certificate();
     }
 
-
     // Download the latest kernel version
     printf(_("Fetching latest kernel version from kernel.org...\n"));
+    printf("PROGRESS:15\n"); fflush(stdout);
 
     char tmp_file[512];
     snprintf(tmp_file, sizeof(tmp_file), "%s/kernel_build/kernelver.txt", home);
-    
+
     char fetch_cmd[1024];
     snprintf(fetch_cmd, sizeof(fetch_cmd),
              "curl -s https://www.kernel.org/ | "
@@ -298,6 +299,7 @@ int main(void) {
     }
 
     printf(_("Latest stable kernel: %s\n"), latest);
+    printf("PROGRESS:20\n"); fflush(stdout);
 
     // Download and extract the kernel
     char cmd[1024];
@@ -306,10 +308,12 @@ int main(void) {
              "wget -O linux-%s.tar.xz https://cdn.kernel.org/pub/linux/kernel/v%c.x/linux-%s.tar.xz",
              home, latest, latest[0], latest);
     run(cmd);
+    printf("PROGRESS:30\n"); fflush(stdout);
 
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build && tar -xf linux-%s.tar.xz", home, latest);
     run(cmd);
+    printf("PROGRESS:35\n"); fflush(stdout);
 
     // Configure the kernel
     snprintf(cmd, sizeof(cmd),
@@ -317,19 +321,24 @@ int main(void) {
              "cp /boot/config-$(uname -r) .config && "
              "yes \"\" | make oldconfig", home, latest);
     run(cmd);
+    printf("PROGRESS:40\n"); fflush(stdout);
 
     snprintf(cmd, sizeof(cmd),
              "cd %s/kernel_build/linux-%s && "
              "sed -i 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=\"%s\"/' .config",
              home, latest, TAG);
     run(cmd);
+    printf("PROGRESS:45\n"); fflush(stdout);
 
     // Build and install using specific operations
     printf(_("Building and installing kernel for %s...\n"), ops->name);
+    printf("PROGRESS:50\n"); fflush(stdout);
     ops->build_and_install(home, latest, TAG);
+    printf("PROGRESS:80\n"); fflush(stdout);
 
     // Update bootloader
     printf(_("Updating bootloader for %s...\n"), ops->name);
+    printf("PROGRESS:90\n"); fflush(stdout);
     ops->update_bootloader();
 
     // For Mint/Ubuntu: offer Secure Boot enrollment
@@ -349,6 +358,7 @@ int main(void) {
         printf(_("Build files cleaned up.\n"));
     }
 
+    printf("PROGRESS:100\n"); fflush(stdout);
     char full_kernel_version[64];
     snprintf(full_kernel_version, sizeof(full_kernel_version), "%s%s", latest, TAG);
     show_completion_dialog(full_kernel_version, distro);

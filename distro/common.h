@@ -15,7 +15,6 @@ typedef enum {
     DISTRO_DEBIAN,
     DISTRO_MINT,    // Linux Mint y Ubuntu
     DISTRO_SOPLOS,  // Soplos Linux
-    DISTRO_ARCH,
     DISTRO_FEDORA,
     DISTRO_UNKNOWN
 } Distro;

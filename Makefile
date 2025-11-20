@@ -8,7 +8,7 @@ LDFLAGS =
 OBJ = kernel-install.o
 TARGET = kernel-installer
 DISTRO_DIR = distro
-DISTRO_HEADERS = $(DISTRO_DIR)/common.h $(DISTRO_DIR)/debian.h $(DISTRO_DIR)/linuxmint.h $(DISTRO_DIR)/soplos.h $(DISTRO_DIR)/arch.h $(DISTRO_DIR)/fedora.h
+DISTRO_HEADERS = $(DISTRO_DIR)/common.h $(DISTRO_DIR)/debian.h $(DISTRO_DIR)/linuxmint.h $(DISTRO_DIR)/soplos.h $(DISTRO_DIR)/fedora.h
 
 # Compilation rules
 $(TARGET): $(OBJ)
@@ -46,5 +46,6 @@ uninstall:
 clean:
 	rm -f $(TARGET) $(OBJ)
 	rm -rf locale/
+	rm -f test_sandbox.sh
 
 .PHONY: all install uninstall clean update-po compile-mo
