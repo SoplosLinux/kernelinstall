@@ -17,15 +17,19 @@ Downloads, configures, compiles and installs the latest stable kernel from kerne
 
  * 1 Clone the repository
  * 2 ```cd kernelinstall```
+ * 3 ```./compile.sh``` (installs all dependencies automatically)
+ 
+ Or manually:
  * 3 ```make && sudo make install```
- * 4 run ```kernel-installer```
+ * 4 run ```kernel-installer``` (terminal) or ```kernel-installer-gui``` (GUI)
 
-When compiling from source, be sure to have the required packages installed (build-essential, gcc, make, gettext, linux-libc-dev, libc6-dev) as these are required. 
+When compiling from source, be sure to have the required packages installed as these are required. 
 
-**Quick install of dependencies:**
+**Quick install of all dependencies (CLI + GUI):**
 ```bash
 sudo apt update
-sudo apt install -y build-essential gcc make gettext linux-libc-dev libc6-dev
+sudo apt install -y build-essential gcc make gettext linux-libc-dev libc6-dev \
+    python3 python3-gi gir1.2-gtk-3.0 gir1.2-vte-2.91
 ``` 
 
 
