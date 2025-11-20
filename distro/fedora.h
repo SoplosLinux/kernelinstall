@@ -4,7 +4,7 @@
 #include "common.h"
 
 void fedora_install_dependencies() {
-    run("sudo dnf update -y && sudo dnf install -y "
+    run("sudo dnf update -y && sudo dnf install -y --skip-broken --allowerasing "
         "gcc make ncurses-devel bc openssl-devel elfutils-libelf-devel elfutils-devel libdw-devel "
         "bison flex perl wget tar xz git gettext dwarves rpm-build "
         "dracut grub2-tools kernel-devel");
