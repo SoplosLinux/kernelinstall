@@ -2,7 +2,15 @@
 # Launcher script for Kernel Installer GUI
 # Author: Alexia Michelle <alexia@goldendoglinux.org>
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Determine if we're running from installation or source
+if [ -f "/usr/local/share/kernel-installer-gui/kernel_installer_gui.py" ]; then
+    # Running from system installation
+    GUI_SCRIPT="/usr/local/share/kernel-installer-gui/kernel_installer_gui.py"
+else
+    # Running from source directory
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    GUI_SCRIPT="$SCRIPT_DIR/kernel_installer_gui.py"
+fi
 
 # Verify that Python3 and GTK3 are installed
 if ! command -v python3 &> /dev/null; then
@@ -20,5 +28,4 @@ if [ $? -ne 0 ]; then
 fi
 
 # Run the GUI
-cd "$SCRIPT_DIR"
-python3 kernel_installer_gui.py "$@"
+python3 "$GUI_SCRIPT" "$@"
