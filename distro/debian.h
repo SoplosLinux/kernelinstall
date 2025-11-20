@@ -7,7 +7,7 @@ void debian_install_dependencies() {
     run("sudo apt update && sudo apt install -y "
         "build-essential libncurses-dev bison flex libssl-dev libelf-dev "
         "bc wget tar xz-utils gettext libc6-dev fakeroot curl git debhelper libdw-dev rsync locales dracut "
-        "linux-libc-dev libudev-dev libbpf-dev pkg-config");
+        "linux-libc-dev libudev-dev libbpf-dev pkg-config zlib1g-dev libzstd-dev dwarves kmod cpio pahole");
 }
 
 void debian_build_and_install(const char* home, const char* version, const char* tag) {

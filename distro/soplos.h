@@ -7,7 +7,8 @@ void soplos_install_dependencies() {
     run("sudo apt update && sudo apt install -y "
         "build-essential libncurses-dev bison flex libssl-dev libelf-dev "
         "bc wget tar xz-utils gettext libc6-dev fakeroot curl git debhelper libdw-dev rsync locales "
-        "dracut dracut-core dracut-network linux-libc-dev libudev-dev libbpf-dev pkg-config");
+        "dracut dracut-core dracut-network linux-libc-dev libudev-dev libbpf-dev pkg-config "
+        "zlib1g-dev libzstd-dev dwarves kmod cpio pahole");
 }
 
 void soplos_build_and_install(const char* home, const char* version, const char* tag) {
