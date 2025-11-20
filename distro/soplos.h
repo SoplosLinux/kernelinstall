@@ -4,19 +4,23 @@
 #include "common.h"
 
 void soplos_install_dependencies() {
-    run("sudo apt update && sudo apt install -y "
+    // Update package list
+    run("sudo apt update");
+    
+    // Install/reinstall all required packages
+    run("sudo apt install --reinstall -y "
         "build-essential libncurses-dev bison flex libssl-dev libelf-dev "
         "bc wget tar xz-utils gettext libc6-dev fakeroot curl git debhelper libdw-dev rsync locales "
         "dracut dracut-core dracut-network linux-libc-dev libudev-dev libbpf-dev pkg-config "
-        "zlib1g-dev libzstd-dev dwarves kmod cpio pahole");
+        "zlib1g-dev libzstd-dev dwarves kmod cpio pahole libzstd-dev liblz4-dev liblzma-dev");
 }
 
 void soplos_build_and_install(const char* home, const char* version, const char* tag) {
     char cmd[2048];
     
-    // Build kernel using bindeb-pkg (without fakeroot due to GCC 15 compatibility issues)
+    // Build kernel using bindeb-pkg with fakeroot
     snprintf(cmd, sizeof(cmd),
-             "cd %s/kernel_build/linux-%s && make -j$(nproc) bindeb-pkg KBUILD_BUILD_USER=soplos KBUILD_BUILD_HOST=soplos-linux",
+             "cd %s/kernel_build/linux-%s && fakeroot make -j$(nproc) bindeb-pkg",
              home, version);
     run(cmd);
     
