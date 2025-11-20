@@ -21,9 +21,9 @@ install_dependencies() {
     
     case $distro in
         debian|ubuntu|linuxmint|pop|elementary|zorin|kali|raspbian|soplos|mx)
-            # Debian-based distributions
+            # Debian-based distributions (force reinstall for broken/missing headers)
             sudo apt update
-            sudo apt install -y build-essential gcc make gettext linux-libc-dev libc6-dev \
+            sudo apt install --reinstall -y build-essential gcc make gettext linux-libc-dev libc6-dev \
                 python3 python3-gi gir1.2-gtk-3.0 gir1.2-vte-2.91
             ;;
         arch|manjaro|endeavouros|cachyos|garuda|artix)
